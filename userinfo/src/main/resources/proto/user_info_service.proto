@@ -1,0 +1,80 @@
+syntax="proto2";
+
+option java_package="edu.rice.cs.classes.grpc.proto";
+option java_multiple_files = true;
+option java_generic_services = false;
+
+
+message Address {
+  enum Type {
+    UNKNOWN = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+  optional Type address_type = 1;
+	optional uint32 street_number = 2;
+	optional string street_name = 3;
+  optional string apartment = 4;
+	optional string city = 5;
+	optional string state = 6;
+  optional uint32 zip = 7;
+}
+
+message Name {
+  optional string first_name = 1;
+  optional string middle_name = 2;
+  optional string last_name = 3;
+  optional string name_suffix_eg_junior = 4;
+}
+
+message UserInfo {
+	optional string id = 1;
+	optional Name name = 2;
+	optional string email = 3;
+	repeated Address addresses = 4;
+	optional uint32 age_years = 5;
+	optional int64 member_since_millis_from_epoch = 6;
+	optional uint32 point_balance = 7;
+}
+
+
+// Service
+
+message UserInfoServiceSaveRequest {
+  optional UserInfo user_info = 1;
+}
+
+message UserInfoServiceSaveResponse {
+  enum CompletionCode {
+    UNKNOWN = 0;
+    OK =1;
+    OOPS = 2;
+  }
+  optional CompletionCode completion_code = 1;
+  optional string comment = 2;
+  optional string user_id_if_any = 3;
+}
+
+
+message UserInfoServiceGetRequest {
+  optional string user_id = 1;
+}
+
+message UserInfoServiceGetResponse {
+  enum CompletionCode {
+    UNKNOWN = 0;
+    OK =1;
+    NOT_FOUND = 2;
+    OOPS = 3;
+  }
+  optional CompletionCode completion_code = 1;
+  optional string comment = 2;
+  optional UserInfo user_info = 3;
+}
+
+service UserInfoService {
+  rpc save(UserInfoServiceSaveRequest) returns (UserInfoServiceSaveResponse) {}
+  
+  rpc get(UserInfoServiceGetRequest) returns (UserInfoServiceGetResponse) {}
+}
+
