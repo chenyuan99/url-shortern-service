@@ -15,7 +15,7 @@ def shorten(request):
     source, created = url.objects.get_or_create(origin_url=long_url)
     token = ""
     if not created:
-        token = url.objects.get(origin_url=long_url).token
+        token = source.token
     else:
         source.user_name = "tmp"
         source.origin_url = long_url
