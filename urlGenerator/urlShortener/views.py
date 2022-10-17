@@ -4,10 +4,20 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from urlShortener.models import url
 import random
+import time
+import string
 
 # Create your views here.
 def token_gen(url):
-    return (str) (random.randint(0, 10))
+    map = string.digits + string.ascii_letters
+    s_url = ""
+    # Convert Base-62
+    id = int(time.time()) * 1000
+    while id > 0:
+        p = id % 62
+        s_url += map[p]
+        id = id // 62
+    return s_url
 
 @api_view(('POST',))
 def shorten(request):
