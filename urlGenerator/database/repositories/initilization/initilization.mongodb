@@ -1,0 +1,106 @@
+// MongoDB Playground
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+const database = 'SHORTEN_URL_SERVICE';
+
+// Create a new database.
+use(database);
+
+// Create token collection.
+db.createCollection('token', {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "Token Object Validation",
+      required: [ "token", "createdAt", "algoType", "avaliable" ],
+      properties: {
+        token: {
+          bsonType: "string",
+          description: "'token' must be a string and is required"
+        },
+        createdAt: {
+          bsonType: "date",
+          description: "'createdAt' must be a timestamp and is required"
+        },
+        algoType: {
+          bsonType: "string",
+          description: "'algoType' must be a timestamp and is required"
+        },
+        avaliable: {
+          bsonType: "bool",
+          description: "'avaliable' must be a timestamp and is required"
+        }
+      }
+    }
+  }
+});
+// set 'token' field unique
+db.token.createIndex({token:1}, {unique: true})
+
+
+//Create shortUrl collection.
+db.createCollection('shortUrl', {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      title: "shortUrl Object Validation",
+      required: [ "shortUrl", "originalUrl", "token", "createdAt", "expireAt" ],
+      properties: {
+        shortUrl: {
+          bsonType: "string",
+          description: "'shortUrl' must be a string and is required"
+        },
+        originalUrl: {
+          bsonType: "string",
+          description: "'originalUrl' must be a string and is required"
+        },
+        token: {
+          bsonType: "string",
+          description: "'token' must be a timestamp and is required"
+        },
+        createdAt: {
+          bsonType: "date",
+          description: "'createdAt' must be a timestamp and is required"
+        },
+        expireAt: {
+          bsonType: "date",
+          description: "'expireAt' must be a timestamp and is required"
+        }
+      }
+    }
+  }
+})
+//set auto expire
+db.shortUrl.createIndex({"expireAt": 1}, {expireAfterSeconds: 0})
+
+
+
+
+// The prototype form to create a collection:
+/* db.createCollection( <name>,
+  {
+    capped: <boolean>,
+    autoIndexId: <boolean>,
+    size: <number>,
+    max: <number>,
+    storageEngine: <document>,
+    validator: <document>,
+    validationLevel: <string>,
+    validationAction: <string>,
+    indexOptionDefaults: <document>,
+    viewOn: <string>,
+    pipeline: <pipeline>,
+    collation: <document>,
+    writeConcern: <document>,
+    timeseries: { // Added in MongoDB 5.0
+      timeField: <string>, // required for time series collections
+      metaField: <string>,
+      granularity: <string>
+    },
+    expireAfterSeconds: <number>,
+    clusteredIndex: <document>, // Added in MongoDB 5.3
+  }
+)*/
+
+// More information on the `createCollection` command can be found at:
+// https://www.mongodb.com/docs/manual/reference/method/db.createCollection/
