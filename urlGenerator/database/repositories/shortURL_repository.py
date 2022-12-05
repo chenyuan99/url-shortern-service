@@ -23,7 +23,12 @@ class ShortUrlRepo(object):
         if not record:
             return None  # type: ignore
         return record["originalUrl"]
-
+    @staticmethod
+    def getShortUrl(id: str) -> str:
+        record = ShortUrlRepo.COL.find_one({"_id" :id})
+        if not record:
+            return None  # type: ignore
+        return record["shortUrl"]
     ##################The following functions are for testing purpose#############3
 
     @staticmethod

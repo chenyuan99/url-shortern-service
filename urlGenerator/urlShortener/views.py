@@ -6,8 +6,11 @@ from urlShortener.models import url
 import random
 import time
 import string
+from database import ShortUrlRepo, TokenRepo
 
-# Create your views here.
+DOMAIN_NAME = "urlService"
+EXPIRED_DURATION = 2
+
 def token_gen(url):
     map = string.digits + string.ascii_letters
     s_url = ""
@@ -22,24 +25,18 @@ def token_gen(url):
 @api_view(('POST',))
 def shorten(request):
     long_url = request.POST["long_url"]
-    source, created = url.objects.get_or_create(origin_url=long_url)
-    token = ""
-    if not created:
-        token = source.token
-    else:
-        source.user_name = "tmp"
-        source.origin_url = long_url
-        token = token_gen(long_url)
-        source.token = token
-        source.save()
-    return Response(data={"shorten_url": "https://" + "domain/" + token})
+    result_obj = ShortUrlRepo.createShortUrl(long_url, DOMAIN_NAME, EXPIRED_DURATION)
+    id = result_obj.inserted_id
+    short_URL = ShortUrlRepo.getShortUrl(id)
+    if short_URL == None:
+        return Response(data={"message":"URL create error!"}, status=404)
+    return Response(data={"shorten_url": short_URL})
+    
 
 @api_view(('POST',))
 def resolve(request):
-    try:
-        short_url = request.POST["short_url"]
-        token = short_url.split("/")[-1]
-        long_url = url.objects.get(token=token).origin_url
-        return Response(data={"resolved_url": long_url})
-    except:
-        return Response(data={"message":"URL not found!"}, status=404)
+    original_URL = ShortUrlRepo.getOriginalUrl(request.POST["short_url"])
+    if original_URL == None:
+        return Response(data={"message":"URL not found or not exists!"}, status=404)
+    else:
+        return Response(data={"resolved_url": original_URL})
