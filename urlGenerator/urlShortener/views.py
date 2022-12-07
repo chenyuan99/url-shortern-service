@@ -26,11 +26,11 @@ def token_gen(url):
 def shorten(request):
     long_url = request.POST["long_url"]
     result_obj = ShortUrlRepo.createShortUrl(long_url, DOMAIN_NAME, EXPIRED_DURATION)
-    id = result_obj.inserted_id
+    id = result_obj["inserted_id"]
     short_URL = ShortUrlRepo.getShortUrl(id)
     if short_URL == None:
         return Response(data={"message":"URL create error!"}, status=404)
-    return Response(data={"shorten_url": short_URL})
+    return Response(data={"shorten_url": short_URL, "expired date": result_obj["createdAt"]})
     
 
 @api_view(('POST',))

@@ -16,6 +16,7 @@ class ShortUrlRepo(object):
         expireAt = createdAt + datetime.timedelta(minutes=duration)
         newRecord = {"shortUrl": shortUrl, "originalUrl": originalUrl, "token": token, "createdAt": createdAt, "expireAt": expireAt}
         res = ShortUrlRepo.COL.insert_one(newRecord)
+        newRecord["inserted_id"] = res.inserted_id
         if not res: 
             print('fail to insert!')
             return None
